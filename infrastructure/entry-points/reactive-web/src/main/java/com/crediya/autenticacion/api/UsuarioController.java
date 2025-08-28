@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos (ej. campos obligatorios vacíos o salario fuera de rango)"),
             @ApiResponse(responseCode = "409", description = "El correo electrónico ya está registrado por otro usuario")
     })
+    @PreAuthorize("hasRole('ADMIN')")
     public Mono<ResponseEntity<ApiResult<Void>>> registrar(@RequestBody UsuarioRequest usuarioRequest) {
         log.info("Iniciando registro de usuario: {}", usuarioRequest.email());
 

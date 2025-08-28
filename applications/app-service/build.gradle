@@ -1,6 +1,10 @@
 apply plugin: 'org.springframework.boot'
 
 dependencies {
+	implementation project(':bcrypt-password-encoder')
+	implementation project(':spring-autentication')
+	implementation project(':jwt-provider')
+	implementation project(':security')
 	implementation project(':transactional')
 	implementation 'org.reactivecommons.utils:object-mapper:0.1.0'
 	implementation project(':r2dbc')

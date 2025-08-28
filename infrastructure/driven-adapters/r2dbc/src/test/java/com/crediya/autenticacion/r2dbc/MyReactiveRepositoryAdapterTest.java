@@ -1,5 +1,7 @@
 package com.crediya.autenticacion.r2dbc;
 
+import com.crediya.autenticacion.r2dbc.domain.usuario.UsuarioReactiveRepository;
+import com.crediya.autenticacion.r2dbc.domain.usuario.UsuarioReactiveRepositoryAdapter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -26,3 +26,11 @@ include ':r2dbc'
 project(':r2dbc').projectDir = file('./infrastructure/driven-adapters/r2dbc')
 include ':transactional'
 project(':transactional').projectDir = file('./infrastructure/entry-points/transactional')
+include ':security'
+project(':security').projectDir = file('./infrastructure/entry-points/security')
+include ':jwt-provider'
+project(':jwt-provider').projectDir = file('./infrastructure/driven-adapters/jwt-provider')
+include ':spring-autentication'
+project(':spring-autentication').projectDir = file('./infrastructure/driven-adapters/spring-autentication')
+include ':bcrypt-password-encoder'
+project(':bcrypt-password-encoder').projectDir = file('./infrastructure/driven-adapters/bcrypt-password-encoder')

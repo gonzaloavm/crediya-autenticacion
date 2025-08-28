@@ -1,4 +1,4 @@
-package com.crediya.autenticacion.r2dbc.helper;
+package com.crediya.autenticacion.r2dbc.domain.helper;
 
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.data.domain.Example;

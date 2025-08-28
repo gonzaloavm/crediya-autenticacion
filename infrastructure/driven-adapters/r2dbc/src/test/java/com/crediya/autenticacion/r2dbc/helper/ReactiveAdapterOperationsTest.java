@@ -1,5 +1,6 @@
 package com.crediya.autenticacion.r2dbc.helper;
 
+import com.crediya.autenticacion.r2dbc.domain.helper.ReactiveAdapterOperations;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
