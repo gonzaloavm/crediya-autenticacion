@@ -13,6 +13,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ServerWebInputException;
@@ -76,6 +77,22 @@ public class GlobalExceptionHandler {
                         .build()
         ));
     }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public Mono<ResponseEntity<ApiResult<Void>>> handleAuthorizationDenied(AuthorizationDeniedException ex) {
+        log.warn("Acceso denegado: {}", ex.getMessage());
+
+        String mensajeUsuario = "No tienes permisos para realizar esta acción.";
+
+        return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                ApiResult.<Void>builder()
+                        .success(false)
+                        .code(HttpStatus.FORBIDDEN.value())
+                        .message(mensajeUsuario)
+                        .build()
+        ));
+    }
+
 
     // Recuperar causa raiz de la excepcion
     private Throwable getRootCause(Throwable throwable) {
