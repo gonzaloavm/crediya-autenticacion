@@ -4,6 +4,7 @@ import com.crediya.autenticacion.ports.AutenticationPort;
 import com.crediya.autenticacion.ports.JwtProviderPort;
 import com.crediya.autenticacion.usecase.iniciarsesion.dto.AuthRequest;
 import com.crediya.autenticacion.usecase.iniciarsesion.dto.JwtResponse;
+import com.crediya.autenticacion.usecase.iniciarsesion.exceptions.AutenticacionFallidaException;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
@@ -19,19 +20,13 @@ public class IniciarSesionUseCase {
     public Mono<JwtResponse> autenticar(AuthRequest request) {
         return autenticationPort.autenticar(request.nombreUsuario(), request.clave())
                 .doOnNext(autenticado -> {
-                    log.info("Usuario autenticado: " + autenticado);
+                    log.fine("Usuario autenticado: " + autenticado.email());
                 })
                 .flatMap(autenticado ->
                         jwtTokenProvider.generarToken(autenticado.email(), autenticado.roles())
                                 .map(JwtResponse::new)
                 )
-                .onErrorResume(throwable -> {
-                    log.warning("Error en autenticación para usuario "
-                            + request.nombreUsuario()
-                            + ": "
-                            + throwable.getMessage());
-                    return Mono.error(new RuntimeException("Autenticación fallida", throwable));
-                });
+                .onErrorResume(throwable -> Mono.error(new AutenticacionFallidaException(request.nombreUsuario())));
     }
 
 }

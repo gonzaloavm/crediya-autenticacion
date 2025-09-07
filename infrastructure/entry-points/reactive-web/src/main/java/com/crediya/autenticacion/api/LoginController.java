@@ -51,17 +51,6 @@ public class LoginController {
                                     .data(jwtResponse)
                                     .build()
                     );
-                })
-                .onErrorResume(RuntimeException.class, e -> {
-                    log.error("Error durante la autenticación: {}", e.getMessage());
-                    // Maneja el error de autenticación y devuelve una respuesta 401
-                    return Mono.just(ResponseEntity.status(401).body(
-                            ApiResult.<JwtResponse>builder()
-                                    .success(false)
-                                    .code(401)
-                                    .message("Credenciales inválidas")
-                                    .build()
-                    ));
                 });
     }
 }

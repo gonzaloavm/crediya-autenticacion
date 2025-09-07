@@ -1,4 +1,4 @@
-package com.crediya.autenticacion.usecase.registrarnuevosolicitante.exceptions;
+package com.crediya.autenticacion.usecase.registrarusuario.exceptions;
 
 public class CorreoDuplicadoException extends RuntimeException {
     public CorreoDuplicadoException(String correo) {

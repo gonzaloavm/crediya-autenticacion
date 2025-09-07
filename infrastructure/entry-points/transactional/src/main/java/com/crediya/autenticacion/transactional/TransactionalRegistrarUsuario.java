@@ -1,7 +1,7 @@
 package com.crediya.autenticacion.transactional;
 
 import com.crediya.autenticacion.model.usuario.Usuario;
-import com.crediya.autenticacion.usecase.registrarnuevosolicitante.RegistrarUsuarioUseCase;
+import com.crediya.autenticacion.usecase.registrarusuario.RegistrarUsuarioUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.reactive.TransactionalOperator;

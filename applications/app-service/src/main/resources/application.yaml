@@ -1,5 +1,6 @@
 server:
   port: 8080
+
 spring:
   application:
     name: "crediya-autenticacion"
@@ -11,6 +12,7 @@ spring:
       path: "/h2"
   profiles:
     include: null
+
 management:
   endpoints:
     web:
@@ -20,6 +22,7 @@ management:
     health:
       probes:
         enabled: true
+
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
 adapters:
@@ -30,6 +33,7 @@ adapters:
       database: autenticacion
       username: sa
       password: 5697964c
+
 springdoc:
   info:
     title: API de Autenticación de CrediYa

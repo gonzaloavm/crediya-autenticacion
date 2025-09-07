@@ -1,4 +1,4 @@
-package com.crediya.autenticacion.usecase.registrarnuevosolicitante;
+package com.crediya.autenticacion.usecase.registrarusuario;
 
 import com.crediya.autenticacion.model.rol.exceptions.RolInvalidoException;
 import com.crediya.autenticacion.model.rol.ports.RolRepositoryPort;
@@ -7,14 +7,12 @@ import com.crediya.autenticacion.model.usuario.exceptions.CampoObligatorioExcept
 import com.crediya.autenticacion.model.usuario.exceptions.SalarioInvalidoException;
 import com.crediya.autenticacion.model.usuario.ports.UsuarioRepositoryPort;
 import com.crediya.autenticacion.ports.PasswordEncoderPort;
-import com.crediya.autenticacion.usecase.registrarnuevosolicitante.exceptions.CorreoDuplicadoException;
+import com.crediya.autenticacion.usecase.registrarusuario.exceptions.CorreoDuplicadoException;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.Collections;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor

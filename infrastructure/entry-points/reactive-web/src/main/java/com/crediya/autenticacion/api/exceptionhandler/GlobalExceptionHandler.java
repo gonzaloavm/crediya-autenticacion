@@ -1,11 +1,6 @@
 package com.crediya.autenticacion.api.exceptionhandler;
 
-import com.crediya.autenticacion.api.UsuarioController;
 import com.crediya.autenticacion.api.dto.api.ApiResult;
-import com.crediya.autenticacion.model.rol.exceptions.RolInvalidoException;
-import com.crediya.autenticacion.model.usuario.exceptions.CampoObligatorioException;
-import com.crediya.autenticacion.model.usuario.exceptions.SalarioInvalidoException;
-import com.crediya.autenticacion.usecase.registrarnuevosolicitante.exceptions.CorreoDuplicadoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;

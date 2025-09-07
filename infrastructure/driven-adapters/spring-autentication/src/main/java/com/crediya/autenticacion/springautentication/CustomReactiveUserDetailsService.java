@@ -34,14 +34,13 @@ public class CustomReactiveUserDetailsService implements ReactiveUserDetailsServ
     }
 
     private Mono<UserDetails> mapToUserDetails(Usuario usuario) {
-        log.info("Usuario a mapear {}", usuario);
-
+        log.debug("Usuario a mapear {}", usuario.getEmail());
         return Flux.fromIterable(usuario.getRoles())
                 .flatMap(rol -> rolRepositoryPort.buscarPorId(rol.getId())) // buscamos nombre real del rol
                 .map(rol -> new SimpleGrantedAuthority(rol.getNombre()))
                 .collectList()
                 .map(authorities -> {
-                    log.info("Authorities cargadas: {}", authorities);
+                    log.debug("Authorities cargadas: {}", authorities);
                     return new User(usuario.getEmail(), usuario.getClave(), authorities);
                 });
     }

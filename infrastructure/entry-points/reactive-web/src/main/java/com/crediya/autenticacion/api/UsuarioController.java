@@ -36,7 +36,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos (ej. campos obligatorios vacíos o salario fuera de rango)"),
             @ApiResponse(responseCode = "409", description = "El correo electrónico ya está registrado por otro usuario")
     })
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ASESOR')")
     public Mono<ResponseEntity<ApiResult<Void>>> registrar(@RequestBody UsuarioRequest usuarioRequest) {
         log.info("Iniciando registro de usuario: {}", usuarioRequest.email());
 
