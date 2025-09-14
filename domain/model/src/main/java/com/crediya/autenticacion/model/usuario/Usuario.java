@@ -16,6 +16,7 @@ import java.util.List;
 public class Usuario {
 
     private BigInteger id;
+    private String usuarioExternalId;
     private String nombre;
     private String apellido;
     private LocalDate fechaNacimiento;

@@ -20,6 +20,8 @@ public class UsuarioData {
     @Id
     @Column
     private BigInteger id;
+    @Column("usuario_external_id")
+    private String usuarioExternalId;
     @Column
     private String nombre;
     @Column

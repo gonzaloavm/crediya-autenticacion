@@ -22,7 +22,6 @@ import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final ReactiveUserDetailsService reactiveUserDetailsService;
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
@@ -46,12 +45,5 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public ReactiveAuthenticationManager authenticationManager(PasswordEncoder passwordEncoder) {
-        var authenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(reactiveUserDetailsService);
-        authenticationManager.setPasswordEncoder(passwordEncoder);
-        return authenticationManager;
     }
 }

@@ -13,6 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -23,21 +24,33 @@ public class RegistrarUsuarioUseCase {
     private final PasswordEncoderPort passwordEncoder;
 
     public Mono<Void> registrar(Usuario usuario) {
-        return Mono.fromCallable(() ->
-                        usuario.toBuilder()
-                                .clave(passwordEncoder.encode(usuario.getClave()))
-                                .build()
-                )
-                .flatMap(usuarioHasheado ->
-                        validarCamposObligatorios(usuarioHasheado)
-                                .then(validarSalario(usuarioHasheado))
-                                .then(validarCorreo(usuarioHasheado))
-                                .then(validarRoles(usuarioHasheado))
-                                .then(usuarioRepositoryPort.guardar(usuarioHasheado))
-                )
+        return validarCamposObligatorios(usuario)
+                .then(validarSalario(usuario))
+                .then(validarCorreo(usuario))
+                .then(validarRoles(usuario))
+                .then(prepararUsuario(usuario))
+                .flatMap(usuarioRepositoryPort::guardar)
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
+    //region PREPARACION DE USUARIO
+
+    private Mono<Usuario> prepararUsuario(Usuario usuario) {
+        return Mono.fromCallable(() ->
+                usuario.toBuilder()
+                        .clave(codificarClave(usuario.getClave()))
+                        .usuarioExternalId(UUID.randomUUID().toString())
+                        .build()
+        );
+    }
+
+    private String codificarClave(String clave) {
+        return passwordEncoder.encode(clave);
+    }
+
+    //endregion
+
+    //region VALIDACIONES
 
     private Mono<Void> validarCamposObligatorios(Usuario usuario) {
         if (usuario.getNombre() == null || usuario.getNombre().isBlank()) {
@@ -103,5 +116,5 @@ public class RegistrarUsuarioUseCase {
                 });
     }
 
-
+    //endregion
 }

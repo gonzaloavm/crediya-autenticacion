@@ -1,12 +1,9 @@
 package com.crediya.autenticacion.api;
 
 import com.crediya.autenticacion.api.dto.api.ApiResult;
-import com.crediya.autenticacion.api.dto.usuario.UsuarioRequest;
-import com.crediya.autenticacion.api.mapper.UsuarioMapper;
-import com.crediya.autenticacion.transactional.TransactionalRegistrarUsuario;
 import com.crediya.autenticacion.usecase.iniciarsesion.IniciarSesionUseCase;
-import com.crediya.autenticacion.usecase.iniciarsesion.dto.AuthRequest;
-import com.crediya.autenticacion.usecase.iniciarsesion.dto.JwtResponse;
+import com.crediya.autenticacion.dto.AuthRequest;
+import com.crediya.autenticacion.dto.JwtResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

@@ -1,6 +1,7 @@
 package com.crediya.autenticacion.tokenprovider;
 
 import com.crediya.autenticacion.ports.JwtProviderPort;
+import com.crediya.autenticacion.dto.JwtClaims;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class JwtProvider implements JwtProviderPort {
     private final String secretKey = "esta-es-mi-clave-mucho-mas-extensa-porque-el-jwt-me-rebota-cuando-es-muy-corta-wtf";
     private final long expirationMillis = 3600000; // 1 hora
 
-    public Mono<String> generarToken(String subject, List<String> roles) {
+    public Mono<String> generarToken(JwtClaims usuarioAutenticado) {
         return Mono.fromCallable(() -> {
 
             Instant ahora = Instant.now();
@@ -29,25 +30,14 @@ public class JwtProvider implements JwtProviderPort {
             SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 
             return Jwts.builder()
-                    .subject(subject)
-                    .claim("roles", roles)
+                    .subject(usuarioAutenticado.sub())
+                    .claim("email", usuarioAutenticado.email())
+                    .claim("roles", usuarioAutenticado.roles())
+                    .claim("documentoIdentidad", usuarioAutenticado.documentoIdentidad())
                     .issuedAt(Date.from(ahora))
                     .expiration(Date.from(expiracion))
                     .signWith(key) // ya no se especifica SignatureAlgorithm
                     .compact();
-
-        });
-    }
-
-    @Override
-    public Mono<String> getUsernameFromToken(String token) {
-        return Mono.fromCallable(() -> {
-            Claims claims = Jwts.parser()
-                    .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-            return claims.getSubject();
         });
     }
 

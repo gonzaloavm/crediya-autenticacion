@@ -1,3 +1,3 @@
-package com.crediya.autenticacion.usecase.iniciarsesion.dto;
+package com.crediya.autenticacion.dto;
 
 public record AuthRequest(String nombreUsuario, String clave) {}

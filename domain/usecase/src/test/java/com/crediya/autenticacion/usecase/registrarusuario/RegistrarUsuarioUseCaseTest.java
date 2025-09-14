@@ -96,9 +96,15 @@ class RegistrarUsuarioUseCaseTest {
         when(passwordEncoder.encode("1234")).thenReturn("hashed1234");
         when(usuarioRepositoryPort.existePorCorreo(usuario.getEmail())).thenReturn(Mono.just(true));
 
+        // ✅ Mock adicional necesario para evitar NPE si Mockito devuelve null
+        when(usuarioRepositoryPort.guardar(any())).thenReturn(Mono.empty());
+
         StepVerifier.create(useCase.registrar(usuario))
                 .expectError(CorreoDuplicadoException.class)
                 .verify();
+
+        // ✅ Validación adicional (opcional) para asegurarte que no se llamó a guardar()
+        verify(usuarioRepositoryPort, never()).guardar(any());
     }
 
     @Test
