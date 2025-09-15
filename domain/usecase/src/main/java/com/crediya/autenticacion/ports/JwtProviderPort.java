@@ -9,4 +9,5 @@ public interface JwtProviderPort {
     Mono<String> generarToken(JwtClaims usuarioAutenticado);
     Mono<Boolean> validateToken(String token);
     Mono<List<String>> getRolesFromToken(String token);
+    Mono<JwtClaims> getClaimsFromToken(String token);
 }

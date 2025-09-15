@@ -12,6 +12,8 @@ spring:
       path: "/h2"
   profiles:
     include: null
+  zipkin:
+    enabled: false
 
 management:
   endpoints:

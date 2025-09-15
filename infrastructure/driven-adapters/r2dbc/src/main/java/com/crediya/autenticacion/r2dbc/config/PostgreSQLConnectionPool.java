@@ -1,13 +1,13 @@
 package com.crediya.autenticacion.r2dbc.config;
 
-import io.r2dbc.pool.ConnectionPool;
-import io.r2dbc.pool.ConnectionPoolConfiguration;
-import io.r2dbc.postgresql.PostgresqlConnectionConfiguration;
-import io.r2dbc.postgresql.PostgresqlConnectionFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import java.time.Duration;
+//import io.r2dbc.pool.ConnectionPool;
+//import io.r2dbc.pool.ConnectionPoolConfiguration;
+//import io.r2dbc.postgresql.PostgresqlConnectionConfiguration;
+//import io.r2dbc.postgresql.PostgresqlConnectionFactory;
+//import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Configuration;
+//
+//import java.time.Duration;
 
 //@Configuration
 public class PostgreSQLConnectionPool {

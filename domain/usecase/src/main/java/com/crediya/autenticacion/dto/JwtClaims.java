@@ -6,5 +6,6 @@ public record JwtClaims(
         String sub,
         String email,
         String documentoIdentidad,
-        List<String> roles
+        List<String> roles,
+        String token
 ) {}

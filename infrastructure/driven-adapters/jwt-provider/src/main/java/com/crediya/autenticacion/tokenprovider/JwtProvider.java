@@ -1,5 +1,6 @@
 package com.crediya.autenticacion.tokenprovider;
 
+import com.crediya.autenticacion.exceptions.InvalidTokenException;
 import com.crediya.autenticacion.ports.JwtProviderPort;
 import com.crediya.autenticacion.dto.JwtClaims;
 import io.jsonwebtoken.*;
@@ -13,6 +14,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -73,6 +75,40 @@ public class JwtProvider implements JwtProviderPort {
             }
             return Collections.emptyList();
         });
+    }
+
+    @Override
+    public Mono<JwtClaims> getClaimsFromToken(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            String subject = claims.getSubject();
+            String email = claims.get("email", String.class);
+            String documentoIdentidad = claims.get("documentoIdentidad", String.class);
+
+            // Obtener la lista de roles de forma segura y evitar el error de casting
+            Object rolesObject = claims.get("roles");
+            List<String> roles;
+
+            if (rolesObject instanceof List) {
+                // Utilizamos el casting seguro para manejar la lista
+                roles = ((List<?>) rolesObject).stream()
+                        .filter(Objects::nonNull)
+                        .map(Object::toString)
+                        .collect(Collectors.toList());
+            } else {
+                // Si no es una lista, devolvemos una lista vacía para evitar errores
+                roles = Collections.emptyList();
+            }
+
+            return Mono.just(new JwtClaims(subject, email, documentoIdentidad, roles, token));
+        } catch (Exception e) {
+            return Mono.error(new InvalidTokenException("Token inválido o expirado"));
+        }
     }
 
     private SecretKey getSigningKey() {

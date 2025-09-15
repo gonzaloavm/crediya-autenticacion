@@ -43,7 +43,7 @@ public class CustomAuthAdapter implements AutenticationPort {
                 .collectList()
                 .map(roles -> {
                     log.debug("Roles cargados: {}", roles);
-                    return new JwtClaims(usuario.getUsuarioExternalId(), usuario.getEmail(), usuario.getDocumentoIdentidad(), roles);
+                    return new JwtClaims(usuario.getUsuarioExternalId(), usuario.getEmail(), usuario.getDocumentoIdentidad(), roles, null);
                 });
     }
 }

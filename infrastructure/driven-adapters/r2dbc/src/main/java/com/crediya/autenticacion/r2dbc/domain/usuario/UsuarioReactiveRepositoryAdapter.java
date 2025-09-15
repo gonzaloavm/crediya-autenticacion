@@ -4,15 +4,13 @@ import com.crediya.autenticacion.model.rol.Rol;
 import com.crediya.autenticacion.model.usuario.Usuario;
 import com.crediya.autenticacion.model.usuario.ports.UsuarioRepositoryPort;
 import com.crediya.autenticacion.r2dbc.entity.UsuarioData;
-import com.crediya.autenticacion.r2dbc.domain.helper.ReactiveAdapterOperations;
+import com.crediya.autenticacion.r2dbc.helper.ReactiveAdapterOperations;
 import com.crediya.autenticacion.r2dbc.entity.UsuarioRolData;
 import com.crediya.autenticacion.r2dbc.relation.UsuarioRolReactiveRepository;
 import org.reactivecommons.utils.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.math.BigInteger;
 import java.util.Collections;
@@ -27,8 +25,8 @@ public class UsuarioReactiveRepositoryAdapter extends ReactiveAdapterOperations<
         UsuarioReactiveRepository
 > implements UsuarioRepositoryPort {
 
+    // Repositorio tecnico (Tabla intermedia)
     private final UsuarioRolReactiveRepository usuarioRolReactiveRepository;
-    private static final Logger log = LoggerFactory.getLogger(UsuarioReactiveRepositoryAdapter.class);
 
     public UsuarioReactiveRepositoryAdapter(
             UsuarioReactiveRepository repository,
@@ -67,7 +65,7 @@ public class UsuarioReactiveRepositoryAdapter extends ReactiveAdapterOperations<
         return repository.findByEmail(correo)
                 .map(super::toEntity)
                 .flatMap(usuario ->
-                        usuarioRolReactiveRepository.findByUsuarioId(usuario.getId()) // <-- método en tu repo técnico
+                        usuarioRolReactiveRepository.findByUsuarioId(usuario.getId())
                                 .map(usuarioRolData -> Rol.builder()
                                         .id(usuarioRolData.getRolId())
                                         .build()
@@ -77,10 +75,9 @@ public class UsuarioReactiveRepositoryAdapter extends ReactiveAdapterOperations<
                 );
     }
 
-
     @Override
-    public Mono<Void> asignarRol(BigInteger usuarioId, BigInteger rolId) {
-        UsuarioRolData entity = new UsuarioRolData(null, usuarioId, rolId);
-        return usuarioRolReactiveRepository.save(entity).then();
+    public Flux<Usuario> buscarPorExternalIds(List<String> externalIds) {
+        return repository.findByUsuarioExternalIdIn(externalIds)
+                .map(this::toEntity);
     }
 }

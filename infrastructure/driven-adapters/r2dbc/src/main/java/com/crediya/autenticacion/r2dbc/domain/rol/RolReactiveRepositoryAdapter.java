@@ -2,14 +2,8 @@ package com.crediya.autenticacion.r2dbc.domain.rol;
 
 import com.crediya.autenticacion.model.rol.Rol;
 import com.crediya.autenticacion.model.rol.ports.RolRepositoryPort;
-import com.crediya.autenticacion.model.usuario.Usuario;
-import com.crediya.autenticacion.model.usuario.ports.UsuarioRepositoryPort;
-import com.crediya.autenticacion.r2dbc.domain.helper.ReactiveAdapterOperations;
-import com.crediya.autenticacion.r2dbc.domain.usuario.UsuarioReactiveRepository;
+import com.crediya.autenticacion.r2dbc.helper.ReactiveAdapterOperations;
 import com.crediya.autenticacion.r2dbc.entity.RolData;
-import com.crediya.autenticacion.r2dbc.entity.UsuarioData;
-import com.crediya.autenticacion.r2dbc.entity.UsuarioRolData;
-import com.crediya.autenticacion.r2dbc.relation.UsuarioRolReactiveRepository;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
