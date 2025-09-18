@@ -39,6 +39,7 @@ COPY --from=builder /app/applications/app-service/build/libs/crediya-autenticaci
 VOLUME /tmp
 
 ENV JAVA_OPTS=" -XX:+UseContainerSupport -XX:MaxRAMPercentage=70 -Djava.security.egd=file:/dev/./urandom"
+ENV SPRING_PROFILES_ACTIVE=docker
 
 # Use a non-root user for security
 USER nobody

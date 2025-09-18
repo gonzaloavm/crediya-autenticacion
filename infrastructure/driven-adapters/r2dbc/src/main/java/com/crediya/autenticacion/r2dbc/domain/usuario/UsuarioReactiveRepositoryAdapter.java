@@ -8,6 +8,8 @@ import com.crediya.autenticacion.r2dbc.helper.ReactiveAdapterOperations;
 import com.crediya.autenticacion.r2dbc.entity.UsuarioRolData;
 import com.crediya.autenticacion.r2dbc.relation.UsuarioRolReactiveRepository;
 import org.reactivecommons.utils.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -27,6 +29,8 @@ public class UsuarioReactiveRepositoryAdapter extends ReactiveAdapterOperations<
 
     // Repositorio tecnico (Tabla intermedia)
     private final UsuarioRolReactiveRepository usuarioRolReactiveRepository;
+
+    private static final Logger log = LoggerFactory.getLogger(UsuarioReactiveRepositoryAdapter.class);
 
     public UsuarioReactiveRepositoryAdapter(
             UsuarioReactiveRepository repository,
@@ -62,16 +66,32 @@ public class UsuarioReactiveRepositoryAdapter extends ReactiveAdapterOperations<
 
     @Override
     public Mono<Usuario> buscarPorCorreo(String correo) {
+        log.debug("Iniciando búsqueda de usuario por correo: {}", correo);
+
+        // Loggeo previo de todos los usuarios (sin afectar el flujo principal)
+        repository.findAll()
+                .collectList()
+                .doOnNext(lista -> log.debug("📋 Usuarios actuales en repositorio: {}", lista))
+                .subscribe(); // Ejecuta sin bloquear ni alterar el flujo
+
         return repository.findByEmail(correo)
+                .doOnNext(data -> log.debug("Usuario encontrado en repositorio: {}", data))
                 .map(super::toEntity)
+                .doOnNext(entity -> log.debug("Transformado a entidad de dominio: {}", entity))
                 .flatMap(usuario ->
                         usuarioRolReactiveRepository.findByUsuarioId(usuario.getId())
+                                .doOnNext(rolData -> log.debug("Rol asociado encontrado: {}", rolData))
                                 .map(usuarioRolData -> Rol.builder()
                                         .id(usuarioRolData.getRolId())
                                         .build()
                                 )
                                 .collectList()
-                                .map(roles -> usuario.toBuilder().roles(roles).build())
+                                .doOnNext(roles -> log.debug("Roles recolectados: {}", roles))
+                                .map(roles -> {
+                                    Usuario enriquecido = usuario.toBuilder().roles(roles).build();
+                                    log.debug("Usuario enriquecido con roles: {}", enriquecido);
+                                    return enriquecido;
+                                })
                 );
     }
 
