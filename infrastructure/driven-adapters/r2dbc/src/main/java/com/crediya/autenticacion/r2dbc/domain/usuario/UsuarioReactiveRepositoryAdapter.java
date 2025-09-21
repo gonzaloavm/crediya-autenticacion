@@ -90,7 +90,7 @@ public class UsuarioReactiveRepositoryAdapter extends ReactiveAdapterOperations<
     }
 
     @Override
-    public Flux<Usuario> buscarPorPublicUsuarioIds(List<String> publicUsuarioIds) {
+    public Flux<Usuario> buscarPorPublicUsuarioIds(List<byte[]> publicUsuarioIds) {
         return repository.findByPublicUsuarioIdIn(publicUsuarioIds)
                 .map(this::toEntity);
     }

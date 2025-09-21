@@ -10,5 +10,5 @@ public interface UsuarioRepositoryPort {
     Mono<Void> guardar(Usuario usuario);
     Mono<Boolean> existePorCorreo(String correo);
     Mono<Usuario> buscarPorCorreo(String correo);
-    Flux<Usuario> buscarPorPublicUsuarioIds(List<String> externalIds);
+    Flux<Usuario> buscarPorPublicUsuarioIds(List<byte[]> externalIds);
 }

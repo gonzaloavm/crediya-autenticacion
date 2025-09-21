@@ -13,5 +13,5 @@ public interface UsuarioReactiveRepository extends ReactiveCrudRepository<Usuari
 
     Mono<UsuarioData> findByEmail(String email);
 
-    Flux<UsuarioData> findByPublicUsuarioIdIn(List<String> externalIds);
+    Flux<UsuarioData> findByPublicUsuarioIdIn(List<byte[]> externalIds);
 }

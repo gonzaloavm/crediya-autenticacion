@@ -71,7 +71,7 @@ class RegistrarUsuarioUseCaseTest {
 
         when(passwordEncoder.encode("1234")).thenReturn("hashed1234");
         when(usuarioRepositoryPort.existePorCorreo(usuario.getEmail())).thenReturn(Mono.just(false));
-        when(rolRepositoryPort.existePorPublicId(rolId).thenReturn(Mono.just(true));
+        when(rolRepositoryPort.existePorPublicId(rolId).thenReturn(Mono.just(true)));
         when(usuarioRepositoryPort.guardar(any(Usuario.class))).thenReturn(Mono.empty());
 
         StepVerifier.create(useCase.registrar(usuario))
