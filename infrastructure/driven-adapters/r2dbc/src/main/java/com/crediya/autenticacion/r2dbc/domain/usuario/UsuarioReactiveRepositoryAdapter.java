@@ -50,8 +50,8 @@ public class UsuarioReactiveRepositoryAdapter extends ReactiveAdapterOperations<
                             .stream()
                             .map(rol -> new UsuarioRolData(
                                     null, // ID autogenerado
-                                    savedUsuario.getId(),
-                                    rol.getId()
+                                    savedUsuario.getUsuarioId(),
+                                    rol.getRolId()
                             ))
                             .toList();
 
@@ -68,21 +68,15 @@ public class UsuarioReactiveRepositoryAdapter extends ReactiveAdapterOperations<
     public Mono<Usuario> buscarPorCorreo(String correo) {
         log.debug("Iniciando búsqueda de usuario por correo: {}", correo);
 
-        // Loggeo previo de todos los usuarios (sin afectar el flujo principal)
-        repository.findAll()
-                .collectList()
-                .doOnNext(lista -> log.debug("📋 Usuarios actuales en repositorio: {}", lista))
-                .subscribe(); // Ejecuta sin bloquear ni alterar el flujo
-
         return repository.findByEmail(correo)
                 .doOnNext(data -> log.debug("Usuario encontrado en repositorio: {}", data))
                 .map(super::toEntity)
                 .doOnNext(entity -> log.debug("Transformado a entidad de dominio: {}", entity))
                 .flatMap(usuario ->
-                        usuarioRolReactiveRepository.findByUsuarioId(usuario.getId())
+                        usuarioRolReactiveRepository.findByUsuarioId(usuario.getUsuarioId())
                                 .doOnNext(rolData -> log.debug("Rol asociado encontrado: {}", rolData))
                                 .map(usuarioRolData -> Rol.builder()
-                                        .id(usuarioRolData.getRolId())
+                                        .rolId(usuarioRolData.getRolId())
                                         .build()
                                 )
                                 .collectList()
@@ -96,8 +90,8 @@ public class UsuarioReactiveRepositoryAdapter extends ReactiveAdapterOperations<
     }
 
     @Override
-    public Flux<Usuario> buscarPorExternalIds(List<String> externalIds) {
-        return repository.findByUsuarioExternalIdIn(externalIds)
+    public Flux<Usuario> buscarPorPublicUsuarioIds(List<String> publicUsuarioIds) {
+        return repository.findByPublicUsuarioIdIn(publicUsuarioIds)
                 .map(this::toEntity);
     }
 }

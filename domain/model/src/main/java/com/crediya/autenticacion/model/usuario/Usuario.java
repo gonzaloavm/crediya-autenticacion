@@ -15,8 +15,8 @@ import java.util.List;
 @ToString
 public class Usuario {
 
-    private BigInteger id;
-    private String usuarioExternalId;
+    private BigInteger usuarioId;
+    private byte[] publicUsuarioId;
     private String nombre;
     private String apellido;
     private LocalDate fechaNacimiento;

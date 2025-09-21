@@ -8,6 +8,7 @@ import com.crediya.autenticacion.model.usuario.exceptions.CampoObligatorioExcept
 import com.crediya.autenticacion.model.usuario.exceptions.SalarioInvalidoException;
 import com.crediya.autenticacion.model.usuario.ports.UsuarioRepositoryPort;
 import com.crediya.autenticacion.ports.PasswordEncoderPort;
+import com.crediya.autenticacion.ports.UuidProviderPort;
 import com.crediya.autenticacion.usecase.registrarusuario.exceptions.CorreoDuplicadoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,9 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -26,6 +29,7 @@ class RegistrarUsuarioUseCaseTest {
     private UsuarioRepositoryPort usuarioRepositoryPort;
     private RolRepositoryPort rolRepositoryPort;
     private PasswordEncoderPort passwordEncoder;
+    private UuidProviderPort uuidProviderPort;
     private RegistrarUsuarioUseCase useCase;
 
     @BeforeEach
@@ -33,13 +37,21 @@ class RegistrarUsuarioUseCaseTest {
         usuarioRepositoryPort = Mockito.mock(UsuarioRepositoryPort.class);
         rolRepositoryPort = Mockito.mock(RolRepositoryPort.class);
         passwordEncoder = Mockito.mock(PasswordEncoderPort.class);
-        useCase = new RegistrarUsuarioUseCase(usuarioRepositoryPort, rolRepositoryPort, passwordEncoder);
+        uuidProviderPort = Mockito.mock(UuidProviderPort.class);
+        useCase = new RegistrarUsuarioUseCase(usuarioRepositoryPort, rolRepositoryPort, passwordEncoder, uuidProviderPort);
     }
 
     private Usuario buildUsuarioValido() {
-        Rol rol = Rol.builder().id(BigInteger.ONE).nombre("USER").build();
+
+        UUID rolUuid = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+        UUID usuarioUuid = UUID.fromString("01996aaa-9f11-7ddd-b090-8e55b0238f80");
+
+        byte[] rolId = uuidProviderPort.toBytes(rolUuid);
+        byte[] usuarioId = uuidProviderPort.toBytes(usuarioUuid);
+
+        Rol rol = Rol.builder().publicRolId(rolId).nombre("USER").build();
         return Usuario.builder()
-                .id(BigInteger.ONE)
+                .publicUsuarioId(usuarioId)
                 .nombre("Juan")
                 .apellido("Pérez")
                 .email("juan@test.com")
@@ -53,9 +65,13 @@ class RegistrarUsuarioUseCaseTest {
     void registrarUsuarioExitosamente() {
         Usuario usuario = buildUsuarioValido();
 
+        UUID rolUuid = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+        byte[] rolId = new byte[16];
+        when(uuidProviderPort.toBytes(rolUuid)).thenReturn(rolId);
+
         when(passwordEncoder.encode("1234")).thenReturn("hashed1234");
         when(usuarioRepositoryPort.existePorCorreo(usuario.getEmail())).thenReturn(Mono.just(false));
-        when(rolRepositoryPort.existePorId(BigInteger.ONE)).thenReturn(Mono.just(true));
+        when(rolRepositoryPort.existePorPublicId(rolId).thenReturn(Mono.just(true));
         when(usuarioRepositoryPort.guardar(any(Usuario.class))).thenReturn(Mono.empty());
 
         StepVerifier.create(useCase.registrar(usuario))
@@ -96,25 +112,31 @@ class RegistrarUsuarioUseCaseTest {
         when(passwordEncoder.encode("1234")).thenReturn("hashed1234");
         when(usuarioRepositoryPort.existePorCorreo(usuario.getEmail())).thenReturn(Mono.just(true));
 
-        // ✅ Mock adicional necesario para evitar NPE si Mockito devuelve null
+        // Mock adicional necesario para evitar NPE si Mockito devuelve null
         when(usuarioRepositoryPort.guardar(any())).thenReturn(Mono.empty());
 
         StepVerifier.create(useCase.registrar(usuario))
                 .expectError(CorreoDuplicadoException.class)
                 .verify();
 
-        // ✅ Validación adicional (opcional) para asegurarte que no se llamó a guardar()
+        // Validación adicional (opcional) para asegurarte que no se llamó a guardar()
         verify(usuarioRepositoryPort, never()).guardar(any());
     }
 
     @Test
     void fallaPorRolInvalido() {
-        Rol rolInvalido = Rol.builder().id(BigInteger.TEN).nombre("INVALIDO").build();
+
+        UUID rolUuid = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+        byte[] rolId = new byte[16];
+
+        when(uuidProviderPort.toBytes(rolUuid)).thenReturn(rolId);
+
+        Rol rolInvalido = Rol.builder().publicRolId(rolId).nombre("INVALIDO").build();
         Usuario usuario = buildUsuarioValido().toBuilder().roles(List.of(rolInvalido)).build();
 
         when(passwordEncoder.encode("1234")).thenReturn("hashed1234");
         when(usuarioRepositoryPort.existePorCorreo(usuario.getEmail())).thenReturn(Mono.just(false));
-        when(rolRepositoryPort.existePorId(BigInteger.TEN)).thenReturn(Mono.just(false));
+        when(rolRepositoryPort.existePorPublicId(rolId)).thenReturn(Mono.just(false));
 
         StepVerifier.create(useCase.registrar(usuario))
                 .expectError(RolInvalidoException.class)

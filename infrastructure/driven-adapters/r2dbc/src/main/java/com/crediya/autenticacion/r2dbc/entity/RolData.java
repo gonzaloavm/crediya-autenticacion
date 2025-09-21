@@ -18,7 +18,10 @@ import java.math.BigInteger;
 public class RolData {
 
     @Id
-    private BigInteger id;
+    @Column("rol_id")
+    private BigInteger rolId;
+    @Column("public_rol_id")
+    private byte[] publicRolId;
     @Column
     private String nombre;
     @Column

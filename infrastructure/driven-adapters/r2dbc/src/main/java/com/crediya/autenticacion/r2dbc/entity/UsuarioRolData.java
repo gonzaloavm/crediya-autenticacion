@@ -18,7 +18,8 @@ import java.math.BigInteger;
 public class UsuarioRolData {
 
     @Id
-    private BigInteger id;
+    @Column("usuario_rol_id")
+    private BigInteger usuarioRolId;
     @Column("usuario_id")
     private BigInteger usuarioId;
     @Column("rol_id")

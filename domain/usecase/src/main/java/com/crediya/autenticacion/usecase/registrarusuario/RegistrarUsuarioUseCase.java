@@ -1,5 +1,6 @@
 package com.crediya.autenticacion.usecase.registrarusuario;
 
+import com.crediya.autenticacion.model.rol.Rol;
 import com.crediya.autenticacion.model.rol.exceptions.RolInvalidoException;
 import com.crediya.autenticacion.model.rol.ports.RolRepositoryPort;
 import com.crediya.autenticacion.model.usuario.Usuario;
@@ -7,13 +8,15 @@ import com.crediya.autenticacion.model.usuario.exceptions.CampoObligatorioExcept
 import com.crediya.autenticacion.model.usuario.exceptions.SalarioInvalidoException;
 import com.crediya.autenticacion.model.usuario.ports.UsuarioRepositoryPort;
 import com.crediya.autenticacion.ports.PasswordEncoderPort;
+import com.crediya.autenticacion.ports.UuidProviderPort;
 import com.crediya.autenticacion.usecase.registrarusuario.exceptions.CorreoDuplicadoException;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.UUID;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ public class RegistrarUsuarioUseCase {
     private final UsuarioRepositoryPort usuarioRepositoryPort;
     private final RolRepositoryPort rolRepositoryPort;
     private final PasswordEncoderPort passwordEncoder;
+    private final UuidProviderPort uuidProviderPort;
 
     public Mono<Void> registrar(Usuario usuario) {
         return validarCamposObligatorios(usuario)
@@ -34,14 +38,22 @@ public class RegistrarUsuarioUseCase {
     }
 
     //region PREPARACION DE USUARIO
-
     private Mono<Usuario> prepararUsuario(Usuario usuario) {
-        return Mono.fromCallable(() ->
-                usuario.toBuilder()
-                        .clave(codificarClave(usuario.getClave()))
-                        .usuarioExternalId(UUID.randomUUID().toString())
-                        .build()
-        );
+        List<byte[]> rolIds = Optional.ofNullable(usuario.getRoles())
+                .orElse(List.of())
+                .stream()
+                .map(Rol::getPublicRolId)
+                .toList();
+
+        return rolRepositoryPort.buscarPorPublicRolIdIn(rolIds)
+                .collectList()
+                .map(rolesValidos ->
+                        usuario.toBuilder()
+                                .clave(codificarClave(usuario.getClave()))
+                                .publicUsuarioId(uuidProviderPort.toBytes(uuidProviderPort.generate()))
+                                .roles(rolesValidos)
+                                .build()
+                );
     }
 
     private String codificarClave(String clave) {
@@ -100,7 +112,7 @@ public class RegistrarUsuarioUseCase {
                     }
                     return Flux.fromIterable(roles);
                 })
-                .flatMap(rol -> rolRepositoryPort.existePorId(rol.getId())
+                .flatMap(rol -> rolRepositoryPort.existePorPublicId(rol.getPublicRolId())
                         .filter(existe -> !existe)
                         .map(invalido -> rol)
                 )
@@ -108,7 +120,7 @@ public class RegistrarUsuarioUseCase {
                 .flatMap(rolesInvalidos -> {
                     if (!rolesInvalidos.isEmpty()) {
                         String ids = rolesInvalidos.stream()
-                                .map(rol -> String.valueOf(rol.getId()))
+                                .map(rol -> String.valueOf(rol.getRolId()))
                                 .collect(Collectors.joining(", "));
                         return Mono.error(new RolInvalidoException("Roles inválidos: " + ids));
                     }

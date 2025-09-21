@@ -12,7 +12,8 @@ import java.math.BigInteger;
 @Builder(toBuilder = true)
 @ToString
 public class Rol {
-    private BigInteger id;
+    private BigInteger rolId;
+    private byte[] publicRolId;
     private String nombre;
     private String descripcion;
 }

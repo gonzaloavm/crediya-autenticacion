@@ -34,3 +34,5 @@ include ':spring-autentication'
 project(':spring-autentication').projectDir = file('./infrastructure/driven-adapters/spring-autentication')
 include ':bcrypt-password-encoder'
 project(':bcrypt-password-encoder').projectDir = file('./infrastructure/driven-adapters/bcrypt-password-encoder')
+include ':uuid'
+project(':uuid').projectDir = file('./infrastructure/helpers/uuid')

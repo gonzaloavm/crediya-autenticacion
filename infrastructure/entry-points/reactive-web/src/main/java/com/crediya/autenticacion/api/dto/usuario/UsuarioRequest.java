@@ -46,5 +46,5 @@ public record UsuarioRequest(
 
     @Schema(description = "Lista de IDs de los roles", example = "[1, 2]", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "El usuario debe tener al menos un rol asignado")
-    List<BigInteger> roles
+    List<String> roles
 ) {}

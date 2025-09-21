@@ -18,10 +18,10 @@ import java.time.LocalDate;
 public class UsuarioData {
 
     @Id
-    @Column
-    private BigInteger id;
-    @Column("usuario_external_id")
-    private String usuarioExternalId;
+    @Column("usuario_id")
+    private BigInteger usuarioId;
+    @Column("public_usuario_id")
+    private byte[] publicUsuarioId;
     @Column
     private String nombre;
     @Column
