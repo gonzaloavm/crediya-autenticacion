@@ -2,6 +2,7 @@ package com.crediya.autenticacion.api.exceptionhandler;
 
 import com.crediya.autenticacion.api.dto.api.ApiResult;
 import com.crediya.autenticacion.api.dto.api.ErrorResult;
+import com.crediya.autenticacion.error.ErrorCode;
 import com.crediya.autenticacion.exception.DomainException;
 import com.crediya.autenticacion.exception.UseCaseException;
 import org.slf4j.Logger;
@@ -55,8 +56,8 @@ public class GlobalExceptionHandler {
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ErrorResult.builder()
                         .status(HttpStatus.BAD_REQUEST.value())
-                        .errorCode(String.valueOf((HttpStatus.BAD_REQUEST.value())))
-                        .title("SERVER_ERROR")
+                        .errorCode(ErrorCode.SERVICE_ERROR.getCode())
+                        .title(ErrorCode.SERVICE_ERROR.getTitle())
                         .detail("JSON inválido o tipos de datos incorrectos. Verifique que los campos enviados coincidan con el formato esperado.")
                         .build()
         ));
@@ -73,8 +74,8 @@ public class GlobalExceptionHandler {
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ErrorResult.builder()
                         .status(HttpStatus.BAD_REQUEST.value())
-                        .errorCode(String.valueOf((HttpStatus.BAD_REQUEST.value())))
-                        .title("SERVER_ERROR")
+                        .errorCode(ErrorCode.SERVICE_ERROR.getCode())
+                        .title(ErrorCode.SERVICE_ERROR.getTitle())
                         .detail("JSON inválido o tipos de datos incorrectos. Verifique que los campos enviados coincidan con el formato esperado. ")
                         .build()
         ));
@@ -87,8 +88,8 @@ public class GlobalExceptionHandler {
         return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                 ErrorResult.builder()
                         .status(HttpStatus.FORBIDDEN.value())
-                        .errorCode(String.valueOf((HttpStatus.FORBIDDEN.value())))
-                        .title("SERVER_ERROR")
+                        .errorCode(ErrorCode.SERVICE_ERROR.getCode())
+                        .title(ErrorCode.SERVICE_ERROR.getTitle())
                         .detail("No tienes permisos para realizar esta acción.")
                         .build()
         ));
@@ -101,8 +102,8 @@ public class GlobalExceptionHandler {
         return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 ErrorResult.builder()
                         .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                        .errorCode(String.valueOf((HttpStatus.INTERNAL_SERVER_ERROR.value())))
-                        .title("SERVER_ERROR")
+                        .errorCode(ErrorCode.SERVICE_ERROR.getCode())
+                        .title(ErrorCode.SERVICE_ERROR.getTitle())
                         .detail("Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo más tarde.")
                         .build()
         ));

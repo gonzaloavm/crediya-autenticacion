@@ -121,7 +121,6 @@ public class JwtProvider implements JwtProviderPort {
         return Collections.emptyList();
     }
 
-
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
