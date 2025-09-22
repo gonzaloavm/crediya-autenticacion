@@ -2,7 +2,7 @@ package com.crediya.autenticacion.usecase.obtenerusuariosporids;
 
 import com.crediya.autenticacion.model.usuario.Usuario;
 import com.crediya.autenticacion.model.usuario.ports.UsuarioRepositoryPort;
-import com.crediya.autenticacion.ports.UuidProviderPort;
+import com.crediya.autenticacion.port.UuidProviderPort;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 

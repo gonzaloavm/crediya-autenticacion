@@ -1,20 +1,19 @@
 package com.crediya.autenticacion.tokenprovider;
 
-import com.crediya.autenticacion.exceptions.InvalidTokenException;
-import com.crediya.autenticacion.ports.JwtProviderPort;
+import com.crediya.autenticacion.error.ErrorCode;
+import com.crediya.autenticacion.exception.AuthenticationException;
+import com.crediya.autenticacion.port.JwtProviderPort;
 import com.crediya.autenticacion.dto.JwtClaims;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,37 +78,49 @@ public class JwtProvider implements JwtProviderPort {
 
     @Override
     public Mono<JwtClaims> getClaimsFromToken(String token) {
-        try {
-            Claims claims = Jwts.parser()
-                    .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
+        return Mono.fromCallable(() -> {
+                    Claims claims = Jwts.parser()
+                            .verifyWith(getSigningKey())
+                            .build()
+                            .parseSignedClaims(token)
+                            .getPayload();
 
-            String subject = claims.getSubject();
-            String email = claims.get("email", String.class);
-            String documentoIdentidad = claims.get("documentoIdentidad", String.class);
+                    List<String> roles = extractRolesSafely(claims);
 
-            // Obtener la lista de roles de forma segura y evitar el error de casting
-            Object rolesObject = claims.get("roles");
-            List<String> roles;
-
-            if (rolesObject instanceof List) {
-                // Utilizamos el casting seguro para manejar la lista
-                roles = ((List<?>) rolesObject).stream()
-                        .filter(Objects::nonNull)
-                        .map(Object::toString)
-                        .collect(Collectors.toList());
-            } else {
-                // Si no es una lista, devolvemos una lista vacía para evitar errores
-                roles = Collections.emptyList();
-            }
-
-            return Mono.just(new JwtClaims(subject, email, documentoIdentidad, roles, token));
-        } catch (Exception e) {
-            return Mono.error(new InvalidTokenException("Token inválido o expirado"));
-        }
+                    return new JwtClaims(
+                            claims.getSubject(),
+                            claims.get("email", String.class),
+                            claims.get("documentoIdentidad", String.class),
+                            roles,
+                            token
+                    );
+                })
+                .subscribeOn(Schedulers.parallel())
+                .onErrorMap(e -> new AuthenticationException(
+                        ErrorCode.INVALID_CREDENTIALS,
+                        "Falló la autenticación. Token inválido o expirado."
+                ));
     }
+
+    private static List<String> extractRolesSafely(Claims claims) {
+        Object rolesObject = claims.get("roles");
+        if (rolesObject instanceof List<?>) {
+            return ((List<?>) rolesObject).stream()
+                    .filter(Objects::nonNull)
+                    .map(Object::toString)
+                    .collect(Collectors.toList());
+        }
+        // Si el claim viene como String con CSV
+        if (rolesObject instanceof String csv) {
+            return Arrays.stream(csv.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
+        }
+        // Fallback: no hay roles o formato inesperado
+        return Collections.emptyList();
+    }
+
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));

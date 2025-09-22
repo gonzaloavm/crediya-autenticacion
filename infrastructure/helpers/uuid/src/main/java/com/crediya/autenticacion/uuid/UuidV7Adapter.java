@@ -1,6 +1,6 @@
 package com.crediya.autenticacion.uuid;
 
-import com.crediya.autenticacion.ports.UuidProviderPort;
+import com.crediya.autenticacion.port.UuidProviderPort;
 import com.github.f4b6a3.uuid.UuidCreator;
 import org.springframework.stereotype.Service;
 

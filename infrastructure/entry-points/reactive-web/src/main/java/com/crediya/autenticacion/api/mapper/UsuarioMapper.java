@@ -4,12 +4,11 @@ import com.crediya.autenticacion.api.dto.usuario.UsuarioRequest;
 import com.crediya.autenticacion.api.dto.usuario.UsuarioResponse;
 import com.crediya.autenticacion.model.rol.Rol;
 import com.crediya.autenticacion.model.usuario.Usuario;
-import com.crediya.autenticacion.ports.UuidProviderPort;
+import com.crediya.autenticacion.port.UuidProviderPort;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Mapper(componentModel = "spring")

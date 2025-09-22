@@ -2,9 +2,9 @@ package com.crediya.autenticacion.config;
 
 import com.crediya.autenticacion.model.rol.ports.RolRepositoryPort;
 import com.crediya.autenticacion.model.usuario.ports.UsuarioRepositoryPort;
-import com.crediya.autenticacion.ports.AutenticationPort;
-import com.crediya.autenticacion.ports.JwtProviderPort;
-import com.crediya.autenticacion.ports.PasswordEncoderPort;
+import com.crediya.autenticacion.port.AutenticationPort;
+import com.crediya.autenticacion.port.JwtProviderPort;
+import com.crediya.autenticacion.port.PasswordEncoderPort;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

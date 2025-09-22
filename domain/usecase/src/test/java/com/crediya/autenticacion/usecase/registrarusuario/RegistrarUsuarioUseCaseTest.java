@@ -1,23 +1,19 @@
 package com.crediya.autenticacion.usecase.registrarusuario;
 
+import com.crediya.autenticacion.exception.ConflictException;
+import com.crediya.autenticacion.exception.DomainValidationException;
 import com.crediya.autenticacion.model.rol.Rol;
-import com.crediya.autenticacion.model.rol.exceptions.RolInvalidoException;
 import com.crediya.autenticacion.model.rol.ports.RolRepositoryPort;
 import com.crediya.autenticacion.model.usuario.Usuario;
-import com.crediya.autenticacion.model.usuario.exceptions.CampoObligatorioException;
-import com.crediya.autenticacion.model.usuario.exceptions.SalarioInvalidoException;
 import com.crediya.autenticacion.model.usuario.ports.UsuarioRepositoryPort;
-import com.crediya.autenticacion.ports.PasswordEncoderPort;
-import com.crediya.autenticacion.ports.UuidProviderPort;
-import com.crediya.autenticacion.usecase.registrarusuario.exceptions.CorreoDuplicadoException;
+import com.crediya.autenticacion.port.PasswordEncoderPort;
+import com.crediya.autenticacion.port.UuidProviderPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.UUID;
 
@@ -88,7 +84,7 @@ class RegistrarUsuarioUseCaseTest {
         when(usuarioRepositoryPort.existePorCorreo(anyString())).thenReturn(Mono.just(false));
 
         StepVerifier.create(useCase.registrar(usuario))
-                .expectErrorMatches(err -> err instanceof CampoObligatorioException &&
+                .expectErrorMatches(err -> err instanceof DomainValidationException &&
                         err.getMessage().contains("nombre"))
                 .verify();
     }
@@ -101,7 +97,7 @@ class RegistrarUsuarioUseCaseTest {
         when(usuarioRepositoryPort.existePorCorreo(anyString())).thenReturn(Mono.just(false));
 
         StepVerifier.create(useCase.registrar(usuario))
-                .expectError(SalarioInvalidoException.class)
+                .expectError(DomainValidationException.class)
                 .verify();
     }
 
@@ -116,7 +112,7 @@ class RegistrarUsuarioUseCaseTest {
         when(usuarioRepositoryPort.guardar(any())).thenReturn(Mono.empty());
 
         StepVerifier.create(useCase.registrar(usuario))
-                .expectError(CorreoDuplicadoException.class)
+                .expectError(ConflictException.class)
                 .verify();
 
         // Validación adicional (opcional) para asegurarte que no se llamó a guardar()
@@ -139,7 +135,7 @@ class RegistrarUsuarioUseCaseTest {
         when(rolRepositoryPort.existePorPublicId(rolId)).thenReturn(Mono.just(false));
 
         StepVerifier.create(useCase.registrar(usuario))
-                .expectError(RolInvalidoException.class)
+                .expectError(DomainValidationException.class)
                 .verify();
     }
 }

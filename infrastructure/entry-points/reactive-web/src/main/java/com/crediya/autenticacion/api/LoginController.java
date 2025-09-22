@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,7 +44,7 @@ public class LoginController {
                     return ResponseEntity.ok(
                             ApiResult.<JwtResponse>builder()
                                     .success(true)
-                                    .code(200)
+                                    .code("")
                                     .message("Autenticación exitosa")
                                     .data(jwtResponse)
                                     .build()

@@ -10,10 +10,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@Schema(name = "ApiResult", description = "Plantilla de respuesta genérica para las APIs")
-public class ApiResult<T> {
-    private boolean success;
-    private String code;
-    private String message;
-    private T data;
+@Schema(name = "ErrorResult", description = "Plantilla de respuesta de errores de las APIs")
+public class ErrorResult {
+    private Integer status;
+    private String errorCode;
+    private String title;
+    private String detail;
 }

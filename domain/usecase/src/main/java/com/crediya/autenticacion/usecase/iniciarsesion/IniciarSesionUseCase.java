@@ -1,10 +1,11 @@
 package com.crediya.autenticacion.usecase.iniciarsesion;
 
-import com.crediya.autenticacion.ports.AutenticationPort;
-import com.crediya.autenticacion.ports.JwtProviderPort;
+import com.crediya.autenticacion.error.ErrorCode;
+import com.crediya.autenticacion.exception.AuthenticationException;
+import com.crediya.autenticacion.port.AutenticationPort;
+import com.crediya.autenticacion.port.JwtProviderPort;
 import com.crediya.autenticacion.dto.AuthRequest;
 import com.crediya.autenticacion.dto.JwtResponse;
-import com.crediya.autenticacion.usecase.iniciarsesion.exceptions.AutenticacionFallidaException;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
@@ -26,7 +27,12 @@ public class IniciarSesionUseCase {
                         jwtTokenProvider.generarToken(autenticado)
                                 .map(JwtResponse::new)
                 )
-                .onErrorResume(throwable -> Mono.error(new AutenticacionFallidaException(request.nombreUsuario())));
+                .onErrorResume(throwable ->
+                        Mono.error(new AuthenticationException(
+                                ErrorCode.INVALID_CREDENTIALS,
+                                "Falló la autenticación para el correo '" + request.nombreUsuario() + "'. Verifica tus credenciales.")
+                        )
+                );
     }
 
 }

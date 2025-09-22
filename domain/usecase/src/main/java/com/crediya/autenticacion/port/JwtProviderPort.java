@@ -1,4 +1,4 @@
-package com.crediya.autenticacion.ports;
+package com.crediya.autenticacion.port;
 
 import com.crediya.autenticacion.dto.JwtClaims;
 import reactor.core.publisher.Mono;

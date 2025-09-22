@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +52,7 @@ public class UsuarioController {
                 .thenReturn(ResponseEntity.status(201).body(
                         ApiResult.<Void>builder()
                                 .success(true)
-                                .code(201)
+                                .code("")
                                 .message("Usuario registrado con éxito")
                                 .build()
                 ));
@@ -72,15 +73,5 @@ public class UsuarioController {
                         .doOnComplete(() -> log.info("Recuperación por lote finalizada."))
                         .doOnError(e -> log.error("Error en recuperación por lote", e))
                         .onErrorResume(e -> Flux.empty()));
-    }
-
-    @RestController
-    @RequestMapping("/test")
-    public class TestController {
-
-        @PostMapping("/ids")
-        public Mono<String> test(@RequestBody Mono<List<String>> idsMono) {
-            return idsMono.map(ids -> "Recibidos " + ids.size() + " IDs");
-        }
     }
 }
